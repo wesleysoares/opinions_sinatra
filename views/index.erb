@@ -1,0 +1,16 @@
+<html>
+<head>
+</head>
+<body>
+  <h1>Welcome to OpinionsApp</h1>
+  <form action='/opinions' method='post'>
+    <label for='opinion'>Opinion</label>
+    <input name='opinion' id='opinion' type='text'>
+    <input type='submit' value='Say it!'>
+  </form>
+  <h3>Opinions</h3>
+  <% opinions.each do |opinion| %>
+    <p><%= opinion %></p>
+  <% end %>
+</body>
+</html>
