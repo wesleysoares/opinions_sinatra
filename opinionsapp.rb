@@ -2,7 +2,7 @@ require 'sinatra'
 require 'sqlite3'
 
   post '/opinions' do
-    insert params
+    insert params[:opinion]
     opinions = retrieve_all
     erb :index, locals: { opinions: opinions }
   end
@@ -13,35 +13,24 @@ require 'sqlite3'
   end
 
   configure do
-    begin
-      db = SQLite3::Database.open "#{ENV['RACK_ENV']}.db"
-      db.execute "CREATE TABLE IF NOT EXISTS 
-               Opinions(id INTEGER PRIMARY KEY AUTOINCREMENT, opinion TEXT)"
-      set :db, db
-    rescue SQLite3::Exception => e
-      puts "Exception occurred"
-      puts e
-    end
+    $filename = "#{ENV['RACK_ENV']}.txt"
+    `touch #{$filename}`
   end
-
 
   private
 
   def db
-    settings.db
+    $db
   end
 
   def retrieve_all
-    stm = db.prepare 'select id, opinion from Opinions'
-    rs = stm.execute
-    rs.map do |line|
-      line[1]
-    end
+    file = File.open($filename, "r+")
+    data = file.readlines("\n")
+    file.close
+    data
   end
   def insert(params)
-    begin
-      db.execute "insert into Opinions (opinion) values ('#{params[:opinion]}')"
-    rescue SQLite3::Exception => e
-      halt 500, e
+    File.open($filename, "a+") do |f|
+      f << params.concat("\n")
     end
   end
